@@ -1,7 +1,11 @@
 package gramma.impl;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.google.common.collect.ImmutableSet;
 
 import org.junit.Test;
@@ -10,8 +14,7 @@ import gramma.model.entities.Edge;
 import gramma.model.entities.Graph;
 import gramma.model.entities.Node;
 
-
-public class CytoscapeFormatterTest {
+public class CytoscapeStreamingWriterTest {
 
     private static String randomId() {
         return UUID.randomUUID().toString();
@@ -38,14 +41,23 @@ public class CytoscapeFormatterTest {
     private final Edge billDoesBillsJob = edge("Bill Does Bill's Job", bill.id(), billsJob.id());
 
     @Test
-    public void testNodeFormat() {
+    public void testNodeFormat() throws IOException {
         Graph graph = ImmutableGraph.of(
             ImmutableSet.of(bob, bill, bobsJob, yes, clueless, billsJob, billsJob),
             ImmutableSet.of(bobDoesBobsJob, canBobBuild, canBillBuild, triesToCopy, billDoesBillsJob)
         );
 
-        BasicCytoscapeFormatter f = BasicCytoscapeFormatter.create();
-        System.out.println(f.format(graph));
+        System.out.println(toJson(graph));
+    }
+
+
+    private String toJson(Graph graph) throws IOException {
+        StringWriter writer = new StringWriter();
+        JsonGenerator g = new JsonFactory().createGenerator(writer);
+        g.useDefaultPrettyPrinter();
+        CytoscapeStreamingWriter.writeGraph(g , graph);
+        g.close();
+        return writer.toString();
     }
 
 }

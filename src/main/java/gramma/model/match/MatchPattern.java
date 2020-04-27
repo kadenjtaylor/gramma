@@ -34,6 +34,7 @@ public class MatchPattern {
 	// although we may need a way to kill this match
 	// early if we start getting complicated matches
 	public Set<Frame> match(Graph graph) {
+		System.out.println("Trying to match (" + name + ")");
 		return matchFunction.apply(graph);
 	}
 

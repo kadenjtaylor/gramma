@@ -1,6 +1,7 @@
 package gramma.model.entities;
 
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -14,6 +15,10 @@ public class Frame {
 
     public String getId(String label) {
         return this.labelToIdMap.get(label);
+    }
+
+    public Set<String> labels() {
+        return labelToIdMap.keySet();
     }
 
     public boolean isEmpty() {
