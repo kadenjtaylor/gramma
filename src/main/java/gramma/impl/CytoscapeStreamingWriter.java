@@ -134,4 +134,18 @@ public class CytoscapeStreamingWriter {
         return writer.toString();
     }
 
+    public static String toJson(Grammar graph) {
+        StringWriter writer = new StringWriter();
+        JsonGenerator g;
+        try {
+            g = new JsonFactory().createGenerator(writer);
+            g.useDefaultPrettyPrinter();
+            CytoscapeStreamingWriter.writeGrammar(g, graph);
+            g.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return writer.toString();
+    }
+
 }

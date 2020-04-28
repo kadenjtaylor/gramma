@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import gramma.impl.CytoscapeStreamingWriter;
 import gramma.impl.ImmutableGraph;
 import gramma.model.entities.Frame;
 import gramma.model.entities.Graph;
@@ -25,9 +26,12 @@ public class Workspace {
 
     public Set<Mutation> getOptionsForSelection(Selection selection) {
         Set<Mutation> mutations = new HashSet<>();
+        Graph subgraph = subset(selection, graph);
+        System.out.println(CytoscapeStreamingWriter.toJson(subgraph));
+        System.out.println(CytoscapeStreamingWriter.toJson(grammar));
         for (Mutagen m : this.grammar.mutagens()) {
             System.out.println("Checking for matches of: " + m.name());
-            Set<Frame> matches = m.matchPattern().match(subset(selection, graph));
+            Set<Frame> matches = m.matchPattern().match(subgraph);
             System.out.println("Found " + matches.size() + " matches!");
             for (Frame frame : matches) {
                 mutations.add(new Mutation(frame, m.actionPattern()));
@@ -68,7 +72,8 @@ public class Workspace {
                 graph.edges().stream().filter(e -> selection.edgeIds().contains(e.id())).collect(Collectors.toSet())
             );
         } else {
-            // TODO: What to do is it's not a valid subgraph... come back to
+            // TODO: What to do is it's not a valid subgraph... come back to this
+            System.out.println("[Warning]: Selection is not a valid subgraph!");
             return ImmutableGraph.empty();
         }
     }

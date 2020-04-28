@@ -78,7 +78,7 @@ public class Selection {
     }
 
     public static Selection any() {
-        return new Selection(ImmutableSet.of(), ImmutableSet.of(), false);
+        return new Selection(ImmutableSet.of(), ImmutableSet.of(), true);
     }
 
     @Override

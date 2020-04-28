@@ -43,9 +43,6 @@ public class GrammaServerResource {
     @Timed
     public StreamingOutput randomMutate() {
         Set<Mutation> optionsForSelection = workspace.getOptionsForSelection(Selection.any());
-        for (Mutation m : optionsForSelection) {
-            System.out.println("\t\t- " + m.frame());
-        }
         Optional<Mutation> mutation = randomChoice(optionsForSelection);
         if (mutation.isPresent()) {
             return mutate(mutation.get());
@@ -79,7 +76,7 @@ public class GrammaServerResource {
     @GET()
     @Path("/options")
     @Timed
-    public StreamingOutput options() { // TODO: Add Selection as
+    public StreamingOutput options() {
         return output -> {
             try (final JsonGenerator json = jsonFactory.createGenerator(output)) {
                 CytoscapeStreamingWriter.writeOptions(json, workspace.getOptionsForSelection(Selection.any()));
@@ -90,7 +87,7 @@ public class GrammaServerResource {
     @GET()
     @Path("/optionsForEmpty")
     @Timed
-    public StreamingOutput emptyOptions() { // TODO: Add Selection as
+    public StreamingOutput emptyOptions() {
         return output -> {
             try (final JsonGenerator json = jsonFactory.createGenerator(output)) {
                 CytoscapeStreamingWriter.writeOptions(json, workspace.getOptionsForSelection(Selection.empty()));
@@ -104,8 +101,8 @@ public class GrammaServerResource {
     public StreamingOutput optionsForNode(@QueryParam("id") String nodeId) {
         return output -> {
             try (final JsonGenerator json = jsonFactory.createGenerator(output)) {
-                CytoscapeStreamingWriter.writeOptions(json,
-                        workspace.getOptionsForSelection(Selection.ofNodes(nodeId)));
+                Set<Mutation> optionsForSelection = workspace.getOptionsForSelection(Selection.ofNodes(nodeId));
+                CytoscapeStreamingWriter.writeOptions(json, optionsForSelection);
             }
         };
     }
@@ -120,12 +117,10 @@ public class GrammaServerResource {
 
     private static <U> Optional<U> randomChoice(Set<U> collection) {
         int size = collection.size();
-        System.out.println("Size of collection to randomly draw from: " + size);
         if (size == 0) {
             return Optional.empty();
         } else {
             int choice = new Random().nextInt(size);
-            System.out.println("Choice: " + choice);
             Iterator<U> iterator = collection.iterator();
             while (choice > 0) {
                 iterator.next();
