@@ -1,11 +1,13 @@
 package gramma.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import gramma.model.action.ActionDrivenGraph;
@@ -19,10 +21,12 @@ public class ActionDrivenMutantGraph implements MutantGraph, ActionDrivenGraph {
 
     private final Map<String, Node> nodesById;
     private final Map<String, Edge> edgesById;
+    private final List<Mutation> history;
 
     public ActionDrivenMutantGraph() {
         this.nodesById = new HashMap<>();
         this.edgesById = new HashMap<>();
+        this.history = new ArrayList<>();
     }
 
     // ---- from Graph interface ---- //
@@ -50,12 +54,14 @@ public class ActionDrivenMutantGraph implements MutantGraph, ActionDrivenGraph {
 
     @Override
     public boolean addNode(Node node) {
+        // System.out.println("\tAdding node (" + node.id() + ") with value: " + node.value());
         nodesById.put(node.id(), node);
         return true;
     }
 
     @Override
     public boolean addEdge(Edge edge) {
+        // System.out.println("\tAdding edge (" + edge.id() + ") with source: " + edge.source() + " and target: " + edge.target());
         edgesById.put(edge.id(), edge);
         return true;
     }
@@ -79,9 +85,20 @@ public class ActionDrivenMutantGraph implements MutantGraph, ActionDrivenGraph {
     public boolean apply(Mutation mutation) {
         boolean success = true;
         List<GraphAction> graphActions = mutation.compile();
+        System.out.println("#################################################################");
         for (GraphAction action : graphActions) {
+            System.out.println(action);
             success &= this.accept(action);
         }
+        System.out.println("#################################################################");
+        if (success) {
+            history.add(mutation);
+        }
         return success;
+    }
+
+    @Override
+    public List<Mutation> history() {
+        return ImmutableList.copyOf(history);
     }
 }

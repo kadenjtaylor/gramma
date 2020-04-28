@@ -2,6 +2,7 @@ package gramma.impl;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -75,6 +76,16 @@ public class CytoscapeStreamingWriter {
         json.writeStartObject();
         json.writeArrayFieldStart("options");
         for (Mutation mutation : options) {
+            writeMutation(json, mutation);
+        }
+        json.writeEndArray();
+        json.writeEndObject();
+    }
+
+    public static void writeHistory(JsonGenerator json, List<Mutation> history) throws IOException {
+        json.writeStartObject();
+        json.writeArrayFieldStart("history");
+        for (Mutation mutation : history) {
             writeMutation(json, mutation);
         }
         json.writeEndArray();

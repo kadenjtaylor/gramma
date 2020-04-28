@@ -21,44 +21,57 @@ public class ActionPatterns {
         return UUID.randomUUID().toString();
     }
 
+
+    /*
+        TODO: OHHHHH.... Because of the way we're creating ActionPatterns,
+        the Strings are decided in advance, and therefore we only have as many unique new node ids
+        as we do action patterns. We need that new nodeId to be decided at application time, not creation
+        time. BUT, we do have to ensure that I can use node IDs between actions in a mutation,
+
+        Bottom line: these static creation functions don't work because newNodeId is fixed to the mutagen.
+
+        Damn, that's a weird one.
+    */
+
+
+
+
     public static ActionPattern newNode(String value) {
-        String newNodeId = randomId();
         return new ActionPattern(
-            "New Node",
+            "New Message",
             ImmutableList.of(
                 (frame) -> GraphAction.addNode(
-                    new Node(newNodeId, value)
+                    new Node(randomId(), value)
                 )
             )
         );
     }
 
     public static ActionPattern spawnParent(String parentValue) {
-        String newNodeId = randomId();
-
+        String newNodeId = UUID.randomUUID().toString();
         return new ActionPattern(
-            "Spawn a parent",
+            "Reply to message",
             ImmutableList.of(
                 (frame) -> GraphAction.addNode(
                     new Node(newNodeId, parentValue)
                 ),
                 (frame) -> GraphAction.addEdge(
-                    new Edge(randomId(), frame.getId("node"), newNodeId)
+                    new Edge("REPLYING_TO_" + randomId(), newNodeId, frame.getId("node"))
                 )
             )
         );
     }
 
     public static ActionPattern spawnChild(String childValue) {
-        String newNodeId = randomId();
+        String newNodeId = UUID.randomUUID().toString();
         return new ActionPattern(
-            "Spawn a child",
+            "Add reaction to message",
             ImmutableList.of(
                 (frame) -> GraphAction.addNode(
                     new Node(newNodeId, childValue)
                 ),
                 (frame) -> GraphAction.addEdge(
-                    new Edge(randomId(), newNodeId, frame.getId("node"))
+                    new Edge("GOT_REACTION_Of_" + randomId(), frame.getId("node"), newNodeId)
                 )
             )
         );

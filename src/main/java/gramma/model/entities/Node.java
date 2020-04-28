@@ -17,4 +17,9 @@ public class Node {
     public String value() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return String.format("{id: %s, value: %s}", id, value);
+    }
 }

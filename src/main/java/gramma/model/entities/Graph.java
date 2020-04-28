@@ -5,11 +5,11 @@ import java.util.Set;
 
 public interface Graph {
 
-	public abstract Set<Node> nodes();
+	public Set<Node> nodes();
 
-	public abstract Set<Edge> edges();
+	public Set<Edge> edges();
 
-	public abstract Optional<Node> getNodeById(String id);
+	public Optional<Node> getNodeById(String id);
 
-	public abstract Optional<Edge> getEdgeById(String id);
+	public Optional<Edge> getEdgeById(String id);
 }

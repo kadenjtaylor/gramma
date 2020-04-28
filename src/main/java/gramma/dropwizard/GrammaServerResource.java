@@ -1,6 +1,10 @@
 package gramma.dropwizard;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -45,10 +49,9 @@ public class GrammaServerResource {
         Set<Mutation> optionsForSelection = workspace.getOptionsForSelection(Selection.any());
         Optional<Mutation> mutation = randomChoice(optionsForSelection);
         if (mutation.isPresent()) {
-            return mutate(mutation.get());
-        } else {
-            return graph();
+            workspace.apply(mutation.get());
         }
+        return history();
     }
 
     @GET()
@@ -115,18 +118,24 @@ public class GrammaServerResource {
         return graph();
     }
 
-    private static <U> Optional<U> randomChoice(Set<U> collection) {
-        int size = collection.size();
-        if (size == 0) {
-            return Optional.empty();
-        } else {
-            int choice = new Random().nextInt(size);
-            Iterator<U> iterator = collection.iterator();
-            while (choice > 0) {
-                iterator.next();
-                choice--;
+    @GET()
+    @Path("/history")
+    @Timed
+    public StreamingOutput history() {
+        return output -> {
+            try (final JsonGenerator json = jsonFactory.createGenerator(output)) {
+                List<Mutation> history= workspace.history();
+                CytoscapeStreamingWriter.writeHistory(json, history);
             }
-            return Optional.of(iterator.next());
+        };
+    }
+
+    private static <U> Optional<U> randomChoice(Collection<U> coll) {
+        if (coll.isEmpty()) {
+            return Optional.empty();
         }
+        List<U> rList = new ArrayList<>(coll);
+        Collections.shuffle(rList);
+        return Optional.of(rList.get(0));
     }
 }

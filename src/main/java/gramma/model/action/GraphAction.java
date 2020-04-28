@@ -48,4 +48,12 @@ public class GraphAction {
     public String id() {
         return id;
     }
+
+    public String toString() {
+        return "{\n" +
+                "    type : " + type + ",\n" +
+                "    edge : " + edge + ",\n" +
+                "    node : " + node + ",\n" +
+                "    id : " + id + ",\n}";
+    }
 }

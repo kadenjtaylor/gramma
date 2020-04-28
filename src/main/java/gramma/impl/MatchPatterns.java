@@ -22,6 +22,7 @@ public class MatchPatterns {
         return isEmpty ? unboundMatch : noMatch;
     });
 
+
     public static MatchPattern nodesWithValue(String value) {
         return new MatchPattern("Nodes with Value: " + value, (g) -> {
             Set<Frame> frames = g.nodes().stream()

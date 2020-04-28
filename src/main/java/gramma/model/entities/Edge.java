@@ -23,4 +23,9 @@ public class Edge {
     public String target() {
         return target;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("{id: %s, source: %s, target: %s}", id, source, target);
+    }
 }

@@ -1,6 +1,7 @@
 package gramma.app;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,12 @@ public class Workspace {
     public Graph graph() {
         return ImmutableGraph.of(graph.nodes(), graph.edges());
     }
+
+    public List<Mutation> history() {
+        // TODO: I think this passthrough is incorrect
+        return this.graph.history();
+    }
+
 
     public Grammar grammar() {
         return grammar;
