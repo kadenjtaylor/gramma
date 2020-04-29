@@ -4,5 +4,5 @@ import gramma.model.entities.Frame;
 
 public interface PartialAction {
 
-    public GraphAction resolve(Frame frame);
+    public PartialActionResult resolve(Frame frame, Frame inner);
 }

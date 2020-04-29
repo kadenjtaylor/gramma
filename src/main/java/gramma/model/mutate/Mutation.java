@@ -1,10 +1,14 @@
 package gramma.model.mutate;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import gramma.model.action.ActionPattern;
 import gramma.model.action.GraphAction;
+import gramma.model.action.PartialAction;
+import gramma.model.action.PartialActionResult;
 import gramma.model.entities.Frame;
 
 public class Mutation {
@@ -26,7 +30,16 @@ public class Mutation {
     }
 
     public List<GraphAction> compile() {
-        return actionPattern.partialActions().stream().map(pa -> pa.resolve(this.frame)).collect(Collectors.toList());
+        List<GraphAction> graphActions = new ArrayList<>();
+        Map<String, String> idsByLabel = new HashMap<>();
+        for (PartialAction p : actionPattern.partialActions()) {
+            PartialActionResult result = p.resolve(frame, new Frame(idsByLabel));
+            graphActions.add(result.getGraphAction());
+            if (result.id() != null && result.label() != null) {
+                idsByLabel.put(result.label(), result.id());
+            }
+        }
+        return graphActions;
     }
 
     @Override
