@@ -3,10 +3,8 @@ package gramma.dropwizard;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 
 import javax.ws.rs.GET;
@@ -51,7 +49,7 @@ public class GrammaServerResource {
         if (mutation.isPresent()) {
             workspace.apply(mutation.get());
         }
-        return history();
+        return graph();
     }
 
     @GET()
