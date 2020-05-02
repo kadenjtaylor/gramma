@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ public class GrammaServerResource {
     @Path("/randomMutate")
     @Timed
     public StreamingOutput randomMutate() {
-        Set<Mutation> optionsForSelection = workspace.getOptionsForSelection(Selection.any());
+        Collection<Mutation> optionsForSelection = workspace.getOptionsForSelection(Selection.any()).values();
         Optional<Mutation> mutation = randomChoice(optionsForSelection);
         if (mutation.isPresent()) {
             workspace.apply(mutation.get());
@@ -102,17 +103,17 @@ public class GrammaServerResource {
     public StreamingOutput optionsForNode(@QueryParam("id") String nodeId) {
         return output -> {
             try (final JsonGenerator json = jsonFactory.createGenerator(output)) {
-                Set<Mutation> optionsForSelection = workspace.getOptionsForSelection(Selection.ofNodes(nodeId));
+                Map<String, Mutation> optionsForSelection = workspace.getOptionsForSelection(Selection.ofNodes(nodeId));
                 CytoscapeStreamingWriter.writeOptions(json, optionsForSelection);
             }
         };
     }
 
-    @POST()
+    @GET()
     @Path("/mutate")
     @Timed
-    public StreamingOutput mutate(Mutation mutation) {
-        workspace.apply(mutation);
+    public StreamingOutput mutate(@QueryParam("id") String mutationId) {
+        workspace.applyById(mutationId);
         return graph();
     }
 

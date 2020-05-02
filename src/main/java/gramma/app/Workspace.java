@@ -1,8 +1,10 @@
 package gramma.app;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import gramma.impl.CytoscapeStreamingWriter;
@@ -19,14 +21,16 @@ public class Workspace {
 
     private Grammar grammar;
     private MutantGraph graph;
+    private final Map<String, Mutation> mutationsById;
 
     public Workspace(MutantGraph graph, Grammar grammar) {
         this.grammar = grammar;
         this.graph = graph;
+        this.mutationsById = new HashMap<>();
     }
 
-    public Set<Mutation> getOptionsForSelection(Selection selection) {
-        Set<Mutation> mutations = new HashSet<>();
+    public Map<String, Mutation> getOptionsForSelection(Selection selection) {
+        this.mutationsById.clear();
         Graph subgraph = subset(selection, graph);
         System.out.println(CytoscapeStreamingWriter.toJson(subgraph));
         System.out.println(CytoscapeStreamingWriter.toJson(grammar));
@@ -35,15 +39,25 @@ public class Workspace {
             Set<Frame> matches = m.matchPattern().match(subgraph);
             System.out.println("Found " + matches.size() + " matches!");
             for (Frame frame : matches) {
-                mutations.add(new Mutation(frame, m.actionPattern()));
+                this.mutationsById.put(UUID.randomUUID().toString(), new Mutation(frame, m.actionPattern()));
             }
         }
-        return mutations;
+        System.out.println("Found " + this.mutationsById.size() + "mutations");
+        return this.mutationsById;
     }
 
     public boolean apply(Mutation mutation) {
+        this.mutationsById.clear();
         return this.graph.apply(mutation);
     }
+
+    public boolean applyById(String mutationId) {
+        Mutation mutation = this.mutationsById.get(mutationId);
+        if (mutation == null) {
+            return false;
+        }
+        return apply(mutation);
+	}
 
     public boolean saveToFile(String fileName) {
         return true; // <=> success

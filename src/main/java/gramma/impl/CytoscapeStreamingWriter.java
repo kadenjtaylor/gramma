@@ -3,6 +3,7 @@ package gramma.impl;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -10,7 +11,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 import gramma.model.action.ActionPattern;
 import gramma.model.entities.Edge;
-import gramma.model.entities.Frame;
 import gramma.model.entities.Graph;
 import gramma.model.entities.Node;
 import gramma.model.grammar.Grammar;
@@ -72,11 +72,14 @@ public class CytoscapeStreamingWriter {
         json.writeEndObject();
     }
 
-    public static void writeOptions(JsonGenerator json, Set<Mutation> options) throws IOException {
+    public static void writeOptions(JsonGenerator json, Map<String, Mutation> options) throws IOException {
         json.writeStartObject();
         json.writeArrayFieldStart("options");
-        for (Mutation mutation : options) {
-            writeMutation(json, mutation);
+        for (String key : options.keySet()) {
+            json.writeStartObject();
+            json.writeStringField("id", key);
+            json.writeStringField("name", options.get(key).actionPattern().name());
+            json.writeEndObject();
         }
         json.writeEndArray();
         json.writeEndObject();
@@ -86,27 +89,9 @@ public class CytoscapeStreamingWriter {
         json.writeStartObject();
         json.writeArrayFieldStart("history");
         for (Mutation mutation : history) {
-            writeMutation(json, mutation);
+            json.writeString(mutation.actionPattern().name());
         }
         json.writeEndArray();
-        json.writeEndObject();
-    }
-
-    private static void writeMutation(JsonGenerator json, Mutation mutation) throws IOException {
-        json.writeStartObject();
-        json.writeFieldName("frame");
-        writeFrame(json, mutation.frame());
-        json.writeFieldName("actionPattern");
-        writeActionPattern(json, mutation.actionPattern());
-        json.writeEndObject();
-    }
-
-    private static void writeFrame(JsonGenerator json, Frame frame) throws IOException {
-        json.writeStartObject();
-        for (String label : frame.labels()) {
-            json.writeStringField("label", label);
-            json.writeStringField("id", frame.getId(label));
-        }
         json.writeEndObject();
     }
 

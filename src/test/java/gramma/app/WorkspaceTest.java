@@ -2,9 +2,7 @@ package gramma.app;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Set;
-
-import com.google.common.collect.ImmutableSet;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -49,11 +47,11 @@ public class WorkspaceTest {
                 System.out.println();
 
                 System.out.println("-> Getting options for my selection given graph and grammar...\n");
-                Set<Mutation> options = workspace.getOptionsForSelection(mySelection);
+                Map<String, Mutation> options = workspace.getOptionsForSelection(mySelection);
 
                 assertEquals("There should only be one applicable option", 1, options.size());
 
-                Mutation chosenMutation = options.iterator().next();
+                Mutation chosenMutation = options.values().iterator().next();
 
                 System.out.println("-> My Choice (Mutation): " + chosenMutation + "\n");
 
@@ -87,7 +85,7 @@ public class WorkspaceTest {
 
                 assertEquals("There should be two options this time", 2, options.size());
 
-                chosenMutation = options.iterator().next();
+                chosenMutation = options.values().iterator().next();
 
                 System.out.println("-> My Choice (Mutation): " + chosenMutation + "\n");
 
